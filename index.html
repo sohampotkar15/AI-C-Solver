@@ -1,0 +1,880 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C-Mentor | AI C Programming Assistant</title>
+
+<style>
+:root {
+    --bg:#080d18;
+    --panel:#111c2e;
+    --border:#293a55;
+    --text:#edf3ff;
+    --muted:#91a3bd;
+    --blue:#568cff;
+    --cyan:#42d9e8;
+    --green:#46d69a;
+}
+
+* {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body {
+    min-height:100vh;
+    color:var(--text);
+    font-family:"Segoe UI",Arial,sans-serif;
+    background:
+        radial-gradient(circle at 15% 0%,#14294b,transparent 35%),
+        radial-gradient(circle at 90% 90%,#102b3a,transparent 30%),
+        var(--bg);
+}
+
+header {
+    height:76px;
+    padding:0 6%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid var(--border);
+    background:#080d18dd;
+    position:sticky;
+    top:0;
+    z-index:5;
+    backdrop-filter:blur(15px);
+}
+
+.logo {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:23px;
+    font-weight:800;
+}
+
+.logo-icon {
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(135deg,var(--blue),var(--cyan));
+    font-family:Consolas,monospace;
+}
+
+.logo span {
+    color:var(--cyan);
+}
+
+.status {
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:var(--muted);
+    font-size:12px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    padding:10px 15px;
+    border-radius:30px;
+}
+
+.dot {
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--green);
+}
+
+.dot.busy {
+    background:#ffbd4a;
+    box-shadow:0 0 10px #ffbd4a;
+}
+
+main {
+    width:min(1000px,90%);
+    margin:55px auto 80px;
+}
+
+.hero {
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.badge {
+    display:inline-block;
+    color:var(--cyan);
+    background:#42d9e814;
+    border:1px solid #42d9e833;
+    border-radius:30px;
+    padding:8px 15px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:1.3px;
+    margin-bottom:20px;
+}
+
+h1 {
+    font-size:clamp(35px,6vw,55px);
+    letter-spacing:-2px;
+    margin-bottom:15px;
+}
+
+h1 span {
+    background:linear-gradient(90deg,#66a0ff,#48e0e5);
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.hero p {
+    color:var(--muted);
+    font-size:15px;
+    line-height:1.7;
+}
+
+.workspace {
+    background:#101a2bf0;
+    border:1px solid var(--border);
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 25px 80px #0005;
+}
+
+.workspace-top {
+    padding:20px 24px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.tag {
+    color:var(--green);
+    font-size:11px;
+    background:#46d69a14;
+    padding:7px 11px;
+    border-radius:20px;
+}
+
+.form-area {
+    padding:25px;
+}
+
+label {
+    display:block;
+    color:#c8d6ed;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:12px;
+}
+
+textarea {
+    width:100%;
+    min-height:145px;
+    resize:vertical;
+    background:#0a1322;
+    color:white;
+    border:1px solid #30435f;
+    outline:none;
+    border-radius:12px;
+    padding:17px;
+    font:14px/1.7 "Segoe UI",Arial,sans-serif;
+}
+
+textarea:focus {
+    border-color:var(--blue);
+    box-shadow:0 0 0 3px #568cff1a;
+}
+
+textarea::placeholder {
+    color:#687b98;
+}
+
+.controls {
+    display:flex;
+    gap:12px;
+    margin-top:19px;
+    flex-wrap:wrap;
+}
+
+select {
+    background:#0a1322;
+    color:var(--text);
+    border:1px solid #30435f;
+    border-radius:10px;
+    padding:12px 14px;
+    outline:none;
+    font-size:13px;
+}
+
+button {
+    cursor:pointer;
+    border:0;
+    font-family:inherit;
+    font-weight:700;
+    transition:.2s;
+}
+
+.generate {
+    flex:1;
+    min-width:180px;
+    border-radius:10px;
+    color:white;
+    background:linear-gradient(100deg,#3979f6,#397fdc);
+    padding:13px 20px;
+    font-size:14px;
+}
+
+.generate:hover {
+    transform:translateY(-2px);
+    filter:brightness(1.1);
+}
+
+button:disabled {
+    opacity:.55;
+    cursor:not-allowed;
+    transform:none;
+}
+
+.clear {
+    background:#202e43;
+    color:#c4d3e9;
+    border:1px solid #34445c;
+    border-radius:10px;
+    padding:12px 18px;
+}
+
+.progress {
+    display:none;
+    padding:0 25px 20px;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.progress.show {
+    display:block;
+}
+
+.track {
+    height:5px;
+    background:#26344a;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:10px;
+}
+
+.bar {
+    height:100%;
+    width:35%;
+    background:linear-gradient(90deg,var(--blue),var(--cyan));
+    animation:move 1.4s infinite ease-in-out;
+}
+
+@keyframes move {
+    from {transform:translateX(-110%)}
+    to {transform:translateX(300%)}
+}
+
+.answer {
+    display:none;
+    margin-top:28px;
+}
+
+.answer.show {
+    display:block;
+}
+
+.answer-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:13px;
+}
+
+.answer-head h2 {
+    font-size:17px;
+}
+
+.copy {
+    background:#1c3047;
+    color:#a9c9ff;
+    border:1px solid #304b6b;
+    border-radius:8px;
+    padding:9px 13px;
+    font-size:12px;
+}
+
+.output {
+    background:#080f1b;
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:22px;
+    line-height:1.7;
+    font-size:14px;
+    color:#dce8f8;
+    overflow-wrap:anywhere;
+}
+
+.output pre {
+    background:#050a12;
+    border:1px solid #263650;
+    border-radius:10px;
+    padding:17px;
+    overflow-x:auto;
+    margin:13px 0;
+    white-space:pre;
+    line-height:1.55;
+}
+
+.output code {
+    font-family:Consolas,"Courier New",monospace;
+    font-size:13px;
+    color:#a9e6c5;
+}
+
+.output p {
+    margin:10px 0;
+}
+
+.error {
+    display:none;
+    color:#ff9aa5;
+    background:#ff657714;
+    border:1px solid #ff657733;
+    padding:14px;
+    border-radius:10px;
+    font-size:13px;
+    line-height:1.6;
+    margin-top:15px;
+}
+
+.cards {
+    margin-top:22px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:13px;
+}
+
+.card {
+    background:#101a2bb3;
+    border:1px solid var(--border);
+    padding:17px;
+    border-radius:13px;
+}
+
+.card strong {
+    display:block;
+    font-size:13px;
+    margin-bottom:7px;
+}
+
+.card p {
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.6;
+}
+
+footer {
+    text-align:center;
+    color:#687b98;
+    font-size:11px;
+    padding:25px;
+}
+
+@media(max-width:650px) {
+    header {padding:0 5%}
+    main {margin-top:35px}
+    .form-area {padding:17px}
+    .cards {grid-template-columns:1fr}
+    .controls {flex-direction:column}
+    select,.generate,.clear {width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        <div class="logo-icon">&lt;/&gt;</div>
+        C<span>-Mentor</span>
+    </div>
+
+    <div class="status">
+        <span class="dot" id="dot"></span>
+        <span id="status">AI Solution</span>
+    </div>
+</header>
+
+<main>
+
+<section class="hero">
+    <div class="badge">YOUR PERSONAL C PROGRAMMING ASSISTANT</div>
+
+    <h1>Code smarter with <span>C-Mentor.</span></h1>
+
+    <p>
+        Enter your C programming question and receive
+        an efficient, beginner-friendly solution.
+    </p>
+</section>
+
+<section class="workspace">
+
+    <div class="workspace-top">
+        <strong>Programming Workspace</strong>
+        <span class="tag">AI SOLUTION</span>
+    </div>
+
+    <div class="form-area">
+
+        <label for="question">What C program do you need?</label>
+
+        <textarea
+            id="question"
+            maxlength="2000"
+            placeholder="Example: Write a C program to find the sum of two numbers."
+        ></textarea>
+
+        <div class="controls">
+
+            <select id="compiler">
+                <option value="turbo">Turbo C (Default)</option>
+                <option value="standard">Standard C</option>
+            </select>
+
+            <button class="generate" id="generate">
+                Generate C Program →
+            </button>
+
+            <button class="clear" id="clear">Clear</button>
+
+        </div>
+    </div>
+
+    <div class="progress" id="progress">
+        <span id="progressText">Preparing AI model...</span>
+        <div class="track">
+            <div class="bar"></div>
+        </div>
+    </div>
+
+</section>
+
+<div class="error" id="error"></div>
+
+<section class="answer" id="answer">
+
+    <div class="answer-head">
+        <h2>Your C Program</h2>
+        <button class="copy" id="copy">Copy Answer</button>
+    </div>
+
+    <div class="output" id="output"></div>
+
+</section>
+
+<section class="cards">
+
+    <div class="card">
+        <strong>⚡ Efficient Solutions</strong>
+        <p>Concise answers with minimal unnecessary statements.</p>
+    </div>
+
+    <div class="card">
+        <strong>⌨ Turbo C Support</strong>
+        <p>Classic Turbo C and Standard C programming conventions.</p>
+    </div>
+
+    <div class="card">
+        <strong>✓ Beginner Friendly</strong>
+        <p>Simple, readable solutions designed for students.</p>
+    </div>
+
+</section>
+
+</main>
+
+<footer>
+    C-Mentor · Your C Programming Assistant
+</footer>
+
+<script type="module">
+
+import * as webllm from
+"https://esm.sh/@mlc-ai/web-llm@0.2.82";
+
+const MODEL =
+"Qwen2.5-Coder-0.5B-Instruct-q4f16_1-MLC";
+
+const $ = id => document.getElementById(id);
+
+let engine = null;
+let enginePromise = null;
+let busy = false;
+let lastAnswer = "";
+
+const SYSTEM_PROMPT = `
+You are C-Mentor, an expert C programming tutor for first-year students.
+
+Solve the student's actual question independently.
+
+OUTPUT:
+- Give exactly ONE complete C program in one fenced c code block.
+- Give a short explanation after the code.
+- Never repeat the program.
+- Never give multiple alternative programs.
+- Do not add sample output unless requested.
+
+TURBO C:
+- Use #include<stdio.h>.
+- Include #include<conio.h> when using Turbo C conventions.
+- Use void main().
+- Use clrscr() and getch() where appropriate.
+- Never use int main() or return 0 in Turbo C mode.
+
+STANDARD C:
+- Use int main(void).
+- Use return 0.
+- Do not use conio.h, clrscr() or getch() unless requested.
+
+INPUT EFFICIENCY:
+- Combine compatible inputs into ONE scanf statement.
+- Two integers: scanf("%d%d",&a,&b);
+- Three integers: scanf("%d%d%d",&a,&b,&c);
+- Two floats: scanf("%f%f",&a,&b);
+- Never split compatible inputs into separate scanf statements.
+- Do not add input prompts unless requested.
+
+CODE EFFICIENCY:
+- Avoid unnecessary variables.
+- Avoid unnecessary functions.
+- Avoid unnecessary arrays and pointers.
+- Do not include unused header files.
+- Do not add unnecessary loops.
+- Keep code simple and beginner-friendly.
+
+OPERATORS:
+- If a specific operator is requested, actually use it.
+- Use % when modulus is requested.
+- Use ?: when conditional operator is requested.
+- Use ++ or -- when requested.
+- If asked without loops, do not use loops.
+- If loops are required, use the appropriate loop.
+
+QUALITY:
+- Check spelling, identifiers, format specifiers, braces,
+  parentheses, semicolons and program logic.
+- Never claim that code was compiled or tested.
+- Answer the current question only.
+`;
+
+function setBusy(value) {
+
+    busy = value;
+
+    $("generate").disabled = value;
+
+    $("generate").textContent =
+        value ? "Generating..." : "Generate C Program →";
+
+    $("progress").classList.toggle("show", value);
+
+    $("dot").classList.toggle("busy", value);
+
+    $("status").textContent =
+        value ? "Generating solution..." : "AI Solution";
+}
+
+function showError(message) {
+
+    $("error").textContent = message;
+
+    $("error").style.display = "block";
+}
+
+function escapeHTML(text) {
+
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function render(text) {
+
+    const safe = escapeHTML(text);
+
+    const parts = safe.split(
+        /```(?:c|C)?\s*([\s\S]*?)```/g
+    );
+
+    $("output").innerHTML = parts.map((part, index) => {
+
+        if (index % 2 === 1) {
+
+            return "<pre><code>" +
+                part.trim() +
+                "</code></pre>";
+        }
+
+        return "<p>" +
+            part
+                .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                .replace(/\n/g, "<br>") +
+            "</p>";
+
+    }).join("");
+}
+
+async function getEngine() {
+
+    if (engine) return engine;
+
+    if (enginePromise) return enginePromise;
+
+    if (!navigator.gpu) {
+
+        throw new Error(
+            "This device or browser does not support WebGPU. Try an updated Chrome or Edge browser on a compatible device."
+        );
+    }
+
+    enginePromise = (async () => {
+
+        $("progressText").textContent =
+            "Loading AI model. First-time setup may take a few minutes...";
+
+        const loadedEngine = await webllm.CreateMLCEngine(
+            MODEL,
+            {
+                initProgressCallback: progress => {
+
+                    if (progress.text) {
+                        $("progressText").textContent =
+                            progress.text;
+                    }
+                }
+            }
+        );
+
+        engine = loadedEngine;
+
+        return engine;
+
+    })();
+
+    try {
+
+        return await enginePromise;
+
+    } catch (error) {
+
+        enginePromise = null;
+
+        throw error;
+    }
+}
+
+function removeRepeatedCode(text) {
+
+    const first = text.indexOf("```");
+
+    if (first < 0) return text;
+
+    const firstClose = text.indexOf("```", first + 3);
+
+    if (firstClose < 0) return text;
+
+    const second = text.indexOf("```", firstClose + 3);
+
+    if (second >= 0) {
+        return text.slice(0, second);
+    }
+
+    return text;
+}
+
+/* MAIN GENERATION FUNCTION */
+
+async function generate() {
+
+    if (busy) return;
+
+    const question = $("question").value.trim();
+
+    if (!question) {
+
+        showError("Please enter a C programming question.");
+
+        return;
+    }
+
+    $("error").style.display = "none";
+
+    $("answer").classList.add("show");
+
+    $("output").innerHTML = "";
+
+    lastAnswer = "";
+
+    setBusy(true);
+
+    let result = "";
+
+    try {
+
+        const ai = await getEngine();
+
+        $("progressText").textContent =
+            "Preparing your new question...";
+
+        /*
+          IMPORTANT FIX:
+          Reset the previous conversation before every
+          new question. The model itself stays loaded.
+        */
+
+        await ai.resetChat();
+
+        const compiler =
+            $("compiler").value === "turbo"
+            ? "Turbo C"
+            : "Standard C";
+
+        const messages = [
+
+            {
+                role: "system",
+                content: SYSTEM_PROMPT
+            },
+
+            {
+                role: "user",
+                content:
+                    "Compiler mode: " + compiler +
+                    "\nThis is a NEW independent question. Ignore all previous questions and solve only this:\n" +
+                    question
+            }
+
+        ];
+
+        $("progressText").textContent =
+            "Generating your new C program...";
+
+        const stream = await ai.chat.completions.create({
+
+            messages: messages,
+
+            temperature: 0.1,
+
+            max_tokens: 750,
+
+            repetition_penalty: 1.08,
+
+            stream: true
+
+        });
+
+        for await (const chunk of stream) {
+
+            const piece =
+                chunk.choices?.[0]?.delta?.content || "";
+
+            if (!piece) continue;
+
+            result += piece;
+
+            result = removeRepeatedCode(result);
+
+            render(result);
+        }
+
+        lastAnswer = result.trim();
+
+        if (!lastAnswer) {
+
+            throw new Error(
+                "The AI returned an empty answer. Please try again."
+            );
+        }
+
+        render(lastAnswer);
+
+        $("progressText").textContent =
+            "Your new solution is ready.";
+
+    } catch (error) {
+
+        console.error(error);
+
+        showError(
+            error.message ||
+            "Something went wrong. Please try again."
+        );
+
+    } finally {
+
+        setBusy(false);
+    }
+}
+
+/* BUTTON EVENTS */
+
+$("generate").addEventListener("click", generate);
+
+$("question").addEventListener("keydown", event => {
+
+    if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key === "Enter"
+    ) {
+        generate();
+    }
+});
+
+$("clear").addEventListener("click", () => {
+
+    if (busy) return;
+
+    $("question").value = "";
+
+    $("output").innerHTML = "";
+
+    $("answer").classList.remove("show");
+
+    $("error").style.display = "none";
+
+    lastAnswer = "";
+});
+
+$("copy").addEventListener("click", async () => {
+
+    if (!lastAnswer) return;
+
+    try {
+
+        await navigator.clipboard.writeText(lastAnswer);
+
+        $("copy").textContent = "Copied!";
+
+        setTimeout(() => {
+            $("copy").textContent = "Copy Answer";
+        }, 1300);
+
+    } catch {
+
+        $("copy").textContent = "Copy unavailable";
+    }
+});
+
+</script>
+
+</body>
+</html>
+```
