@@ -1,0 +1,2369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b16">
+
+<title>C AI Solver | Your Personal C Programming Mentor</title>
+
+<style>
+:root{
+    --bg:#080b16;
+    --bg2:#0d1323;
+    --panel:#111a2d;
+    --panel2:#17243b;
+    --border:rgba(145,175,220,.15);
+    --text:#f2f6ff;
+    --muted:#8b9bb7;
+    --blue:#558bff;
+    --cyan:#42d9e8;
+    --purple:#9a78ff;
+    --green:#38d99c;
+    --red:#ff657a;
+    --yellow:#ffcc72;
+    --radius:19px;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:
+        radial-gradient(ellipse at 15% 0%,rgba(50,101,210,.16),transparent 35%),
+        radial-gradient(ellipse at 90% 35%,rgba(104,75,190,.12),transparent 32%),
+        var(--bg);
+    color:var(--text);
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+    min-height:100vh;
+}
+
+button,textarea,select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+/* APP */
+
+.app{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+}
+
+/* HEADER */
+
+.header{
+    height:76px;
+    padding:0 5%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid var(--border);
+    background:rgba(8,11,22,.88);
+    backdrop-filter:blur(18px);
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.brand-logo{
+    width:43px;
+    height:43px;
+    display:grid;
+    place-items:center;
+    border-radius:14px;
+    background:linear-gradient(135deg,#438cff,#43d8e6);
+    color:#06101e;
+    font-size:22px;
+    font-weight:1000;
+    box-shadow:0 5px 24px rgba(67,140,255,.25);
+}
+
+.brand-name{
+    font-size:20px;
+    font-weight:900;
+    letter-spacing:-.7px;
+}
+
+.brand-name span{
+    background:linear-gradient(90deg,#69a9ff,#55dfe9);
+    background-clip:text;
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.brand-subtitle{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:9px;
+    letter-spacing:2px;
+    font-weight:700;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:#111a2b;
+    border:1px solid var(--border);
+    padding:9px 13px;
+    border-radius:30px;
+    font-size:11px;
+    color:var(--muted);
+}
+
+.status-dot{
+    width:8px;
+    height:8px;
+    background:var(--yellow);
+    border-radius:50%;
+    box-shadow:0 0 10px currentColor;
+}
+
+.status-dot.ready{
+    background:var(--green);
+}
+
+.status-dot.error{
+    background:var(--red);
+}
+
+.header-version{
+    font-size:10px;
+    color:#7184a4;
+}
+
+/* MAIN */
+
+.main{
+    width:min(1120px,94%);
+    margin:auto;
+    flex:1;
+    padding:32px 0 22px;
+}
+
+/* HERO */
+
+.hero{
+    text-align:center;
+    padding:38px 12px 30px;
+}
+
+.hero-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid rgba(85,139,255,.3);
+    background:rgba(85,139,255,.08);
+    color:#8db7ff;
+    padding:8px 14px;
+    border-radius:30px;
+    font-size:10px;
+    letter-spacing:1.7px;
+    font-weight:800;
+    margin-bottom:22px;
+}
+
+.hero-tag i{
+    width:7px;
+    height:7px;
+    background:var(--cyan);
+    border-radius:50%;
+    box-shadow:0 0 12px var(--cyan);
+}
+
+.hero h1{
+    font-size:clamp(35px,6vw,61px);
+    line-height:1.08;
+    letter-spacing:-2.4px;
+    font-weight:900;
+    margin-bottom:17px;
+}
+
+.hero h1 span{
+    display:block;
+    background:linear-gradient(95deg,#69a9ff 10%,#5edee8 52%,#a88aff 95%);
+    background-clip:text;
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.hero-description{
+    max-width:610px;
+    margin:auto;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.8;
+}
+
+.hero-stats{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:23px;
+}
+
+.stat-pill{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:8px 12px;
+    border:1px solid var(--border);
+    background:rgba(20,32,54,.75);
+    border-radius:30px;
+    color:#b7c7df;
+    font-size:10px;
+}
+
+/* WORKSPACE */
+
+.workspace{
+    background:rgba(15,23,39,.92);
+    border:1px solid rgba(145,175,220,.19);
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:0 25px 80px rgba(0,0,0,.28);
+}
+
+/* TOOLBAR */
+
+.workspace-toolbar{
+    padding:16px 19px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(90deg,#111d32,#131c30);
+}
+
+.workspace-title{
+    display:flex;
+    align-items:center;
+    gap:11px;
+}
+
+.workspace-icon{
+    width:36px;
+    height:36px;
+    display:grid;
+    place-items:center;
+    border-radius:12px;
+    background:linear-gradient(135deg,#244c81,#193b4d);
+    color:var(--cyan);
+    font-size:17px;
+}
+
+.workspace-title h2{
+    font-size:13px;
+    font-weight:800;
+}
+
+.workspace-title p{
+    font-size:10px;
+    color:var(--muted);
+    margin-top:3px;
+}
+
+.toolbar-actions{
+    display:flex;
+    align-items:center;
+    gap:9px;
+}
+
+.mode-select{
+    border:1px solid var(--border);
+    background:#111b2e;
+    color:var(--text);
+    padding:9px 11px;
+    border-radius:9px;
+    font-size:11px;
+    outline:none;
+}
+
+.new-chat{
+    background:linear-gradient(135deg,#3e7ef3,#4eaddc);
+    border:none;
+    color:#071324;
+    padding:10px 13px;
+    border-radius:9px;
+    font-size:11px;
+    font-weight:850;
+    transition:.2s;
+}
+
+.new-chat:hover{
+    filter:brightness(1.15);
+    transform:translateY(-1px);
+}
+
+/* CHAT AREA */
+
+.chat-area{
+    height:510px;
+    overflow-y:auto;
+    padding:25px;
+    scroll-behavior:smooth;
+}
+
+.chat-area::-webkit-scrollbar{
+    width:6px;
+}
+
+.chat-area::-webkit-scrollbar-thumb{
+    background:#30405d;
+    border-radius:20px;
+}
+
+/* WELCOME */
+
+.welcome{
+    max-width:670px;
+    margin:35px auto;
+    text-align:center;
+}
+
+.welcome-symbol{
+    width:77px;
+    height:77px;
+    display:grid;
+    place-items:center;
+    margin:0 auto 22px;
+    border-radius:25px;
+    background:linear-gradient(135deg,#1b3d67,#173c49);
+    border:1px solid rgba(83,178,226,.3);
+    color:#77e5ee;
+    font-size:32px;
+    box-shadow:0 12px 38px rgba(55,128,210,.15);
+}
+
+.welcome h2{
+    font-size:25px;
+    letter-spacing:-.6px;
+    margin-bottom:11px;
+}
+
+.welcome h2 span{
+    color:#73b5ff;
+}
+
+.welcome p{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.8;
+}
+
+.suggestion-heading{
+    margin-top:29px;
+    margin-bottom:12px;
+    text-align:left;
+    font-size:10px;
+    color:#7f91af;
+    letter-spacing:1.3px;
+    font-weight:800;
+}
+
+.suggestions{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:11px;
+}
+
+.suggestion{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-align:left;
+    padding:15px;
+    border-radius:13px;
+    border:1px solid var(--border);
+    background:linear-gradient(145deg,#15233a,#101b2e);
+    color:#dfeaff;
+    font-size:12px;
+    line-height:1.5;
+    transition:.2s;
+}
+
+.suggestion:hover{
+    border-color:#578dff;
+    background:#1a2b47;
+    transform:translateY(-2px);
+}
+
+.suggestion-icon{
+    flex-shrink:0;
+    width:35px;
+    height:35px;
+    border-radius:10px;
+    display:grid;
+    place-items:center;
+    background:#203858;
+    font-size:16px;
+}
+
+.suggestion small{
+    display:block;
+    color:var(--muted);
+    margin-top:3px;
+    font-size:10px;
+}
+
+/* MESSAGES */
+
+.message{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:25px;
+}
+
+.message.user{
+    flex-direction:row-reverse;
+}
+
+.avatar{
+    flex-shrink:0;
+    width:35px;
+    height:35px;
+    display:grid;
+    place-items:center;
+    border-radius:11px;
+    font-size:10px;
+    font-weight:900;
+}
+
+.avatar.ai{
+    color:#72e5ed;
+    background:linear-gradient(135deg,#1d4167,#193d49);
+    border:1px solid #30536e;
+}
+
+.avatar.user{
+    color:#7de8b6;
+    background:#1c4439;
+    border:1px solid #326953;
+}
+
+.message-content{
+    min-width:0;
+    max-width:88%;
+}
+
+.message-label{
+    font-size:10px;
+    color:#8295b1;
+    margin-bottom:7px;
+    font-weight:800;
+    letter-spacing:.5px;
+}
+
+.message.user .message-label{
+    text-align:right;
+}
+
+.bubble{
+    background:linear-gradient(145deg,#15243a,#111d30);
+    border:1px solid var(--border);
+    border-radius:5px 15px 15px 15px;
+    padding:15px 17px;
+    font-size:13px;
+    line-height:1.8;
+    overflow-wrap:anywhere;
+}
+
+.message.user .bubble{
+    background:linear-gradient(145deg,#1c3655,#172b43);
+    border-color:#345575;
+    border-radius:15px 5px 15px 15px;
+}
+
+.bubble p{
+    margin-bottom:10px;
+}
+
+.bubble p:last-child{
+    margin-bottom:0;
+}
+
+.bubble h3{
+    font-size:15px;
+    margin:14px 0 9px;
+}
+
+.bubble ul,.bubble ol{
+    padding-left:22px;
+    margin:9px 0;
+}
+
+.bubble li{
+    margin:5px 0;
+}
+
+.bubble code.inline{
+    background:#263d5b;
+    color:#82e8ef;
+    padding:2px 6px;
+    border-radius:5px;
+}
+
+/* CODE */
+
+.code-card{
+    margin:14px 0;
+    border:1px solid #344e6d;
+    border-radius:13px;
+    overflow:hidden;
+    background:#080f1c;
+}
+
+.code-toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:10px 13px;
+    background:#15253b;
+    border-bottom:1px solid #344e6d;
+}
+
+.code-language{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#a6b9d3;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:1px;
+}
+
+.code-language i{
+    width:7px;
+    height:7px;
+    background:var(--green);
+    border-radius:50%;
+}
+
+.code-actions{
+    display:flex;
+    gap:7px;
+}
+
+.code-actions button{
+    border:1px solid #3c5878;
+    background:#1b304a;
+    color:#dbeaff;
+    padding:6px 9px;
+    border-radius:6px;
+    font-size:10px;
+}
+
+.code-actions button:hover{
+    border-color:var(--cyan);
+    color:var(--cyan);
+}
+
+.code-card pre{
+    overflow-x:auto;
+    padding:17px;
+    color:#c7efdc;
+    font-family:Consolas,Monaco,monospace;
+    font-size:12px;
+    line-height:1.8;
+    white-space:pre;
+    tab-size:4;
+}
+
+/* RESPONSE ACTIONS */
+
+.response-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-top:10px;
+}
+
+.response-actions button{
+    background:#14243b;
+    border:1px solid var(--border);
+    color:#aabbd3;
+    border-radius:7px;
+    padding:7px 10px;
+    font-size:10px;
+}
+
+.response-actions button:hover{
+    color:var(--cyan);
+    border-color:#4d8fc8;
+}
+
+/* LOADING */
+
+.loading-message{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#a9bbd4;
+    font-size:12px;
+}
+
+.loading-spinner{
+    width:16px;
+    height:16px;
+    border:2px solid #324866;
+    border-top-color:var(--cyan);
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+/* PROGRESS */
+
+.progress-box{
+    display:none;
+    padding:14px 20px;
+    border-top:1px solid var(--border);
+    background:#101b2d;
+}
+
+.progress-info{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    color:#9aacc7;
+    font-size:10px;
+    margin-bottom:9px;
+}
+
+.progress-track{
+    width:100%;
+    height:6px;
+    background:#273a55;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    width:0;
+    height:100%;
+    background:linear-gradient(90deg,#528bff,#52d9e6);
+    border-radius:20px;
+    transition:width .25s;
+}
+
+/* INPUT */
+
+.input-section{
+    padding:17px;
+    background:#0e192b;
+    border-top:1px solid var(--border);
+}
+
+.input-container{
+    display:flex;
+    align-items:flex-end;
+    gap:10px;
+    background:#17253c;
+    border:1px solid #354b68;
+    padding:10px;
+    border-radius:14px;
+    transition:.2s;
+}
+
+.input-container:focus-within{
+    border-color:#5797ff;
+    box-shadow:0 0 0 3px rgba(87,151,255,.09);
+}
+
+#prompt{
+    flex:1;
+    min-width:0;
+    min-height:45px;
+    max-height:140px;
+    resize:none;
+    border:0;
+    outline:0;
+    background:transparent;
+    color:var(--text);
+    font-size:13px;
+    line-height:1.6;
+    padding:9px 5px;
+}
+
+#prompt::placeholder{
+    color:#7c8da9;
+}
+
+.send-button{
+    min-width:90px;
+    padding:13px 15px;
+    border:0;
+    border-radius:10px;
+    background:linear-gradient(120deg,#4d8cff,#45cce0);
+    color:#071321;
+    font-size:11px;
+    font-weight:900;
+    transition:.2s;
+}
+
+.send-button:hover{
+    filter:brightness(1.15);
+    transform:translateY(-1px);
+}
+
+.send-button:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+    transform:none;
+}
+
+.input-bottom{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:9px 4px 0;
+    color:#7486a3;
+    font-size:10px;
+}
+
+.input-bottom strong{
+    color:#8ca9d1;
+    font-weight:600;
+}
+
+/* FEATURES */
+
+.feature-section{
+    padding:32px 0 8px;
+}
+
+.section-heading{
+    text-align:center;
+    margin-bottom:19px;
+}
+
+.section-heading small{
+    color:var(--cyan);
+    letter-spacing:2px;
+    font-size:9px;
+    font-weight:900;
+}
+
+.section-heading h2{
+    font-size:22px;
+    margin-top:8px;
+    letter-spacing:-.5px;
+}
+
+.features{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:13px;
+}
+
+.feature{
+    background:linear-gradient(145deg,#131f33,#0e1727);
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:18px;
+    transition:.2s;
+}
+
+.feature:hover{
+    border-color:#456fa4;
+    transform:translateY(-3px);
+}
+
+.feature-icon{
+    width:39px;
+    height:39px;
+    border-radius:12px;
+    background:#203653;
+    display:grid;
+    place-items:center;
+    font-size:19px;
+    margin-bottom:13px;
+}
+
+.feature h3{
+    font-size:13px;
+    margin-bottom:7px;
+}
+
+.feature p{
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.7;
+}
+
+/* FOOTER */
+
+.footer{
+    margin-top:30px;
+    padding:22px 12px;
+    text-align:center;
+    border-top:1px solid var(--border);
+    color:#7285a1;
+    font-size:10px;
+    line-height:1.9;
+}
+
+.footer strong{
+    color:#c3d8f5;
+}
+
+.footer .footer-brand{
+    color:#70b5ff;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:1px;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    .header{
+        height:65px;
+        padding:0 12px;
+    }
+
+    .brand-logo{
+        width:37px;
+        height:37px;
+        border-radius:11px;
+    }
+
+    .brand-name{
+        font-size:16px;
+    }
+
+    .brand-subtitle{
+        font-size:7px;
+        letter-spacing:1px;
+    }
+
+    .header-version{
+        display:none;
+    }
+
+    .status{
+        font-size:9px;
+        padding:8px 9px;
+    }
+
+    .main{
+        width:96%;
+        padding:12px 0;
+    }
+
+    .hero{
+        padding:27px 7px 23px;
+    }
+
+    .hero h1{
+        font-size:36px;
+        letter-spacing:-1.5px;
+    }
+
+    .hero-description{
+        font-size:12px;
+    }
+
+    .workspace{
+        border-radius:15px;
+    }
+
+    .workspace-toolbar{
+        padding:12px;
+        flex-wrap:wrap;
+    }
+
+    .workspace-title h2{
+        font-size:12px;
+    }
+
+    .toolbar-actions{
+        width:100%;
+        justify-content:space-between;
+    }
+
+    .mode-select{
+        flex:1;
+    }
+
+    .new-chat{
+        flex:1;
+    }
+
+    .chat-area{
+        height:55vh;
+        min-height:370px;
+        padding:13px 10px;
+    }
+
+    .welcome{
+        margin:20px auto;
+    }
+
+    .welcome-symbol{
+        width:62px;
+        height:62px;
+        font-size:26px;
+    }
+
+    .welcome h2{
+        font-size:21px;
+    }
+
+    .welcome p{
+        font-size:11px;
+    }
+
+    .suggestions{
+        grid-template-columns:1fr;
+    }
+
+    .suggestion{
+        padding:12px;
+    }
+
+    .message{
+        gap:8px;
+        margin-bottom:18px;
+    }
+
+    .avatar{
+        width:29px;
+        height:29px;
+        font-size:9px;
+    }
+
+    .message-content{
+        max-width:calc(100% - 37px);
+    }
+
+    .bubble{
+        padding:11px;
+        font-size:12px;
+    }
+
+    .code-card pre{
+        font-size:11px;
+        padding:12px;
+    }
+
+    .input-section{
+        padding:10px;
+    }
+
+    .send-button{
+        min-width:66px;
+        padding:12px 9px;
+    }
+
+    .input-bottom{
+        font-size:9px;
+    }
+
+    .features{
+        grid-template-columns:1fr;
+    }
+
+    .feature{
+        padding:14px;
+    }
+
+    .feature-icon{
+        margin-bottom:9px;
+    }
+}
+
+@media(max-width:360px){
+
+    .brand-name{
+        font-size:14px;
+    }
+
+    .status{
+        font-size:0;
+    }
+
+    .status-dot{
+        width:9px;
+        height:9px;
+    }
+
+    .hero h1{
+        font-size:30px;
+    }
+
+    .code-actions button{
+        font-size:9px;
+        padding:5px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header class="header">
+
+    <div class="brand">
+        <div class="brand-logo">C</div>
+
+        <div>
+            <div class="brand-name">C AI <span>Solver</span></div>
+            <div class="brand-subtitle">YOUR PERSONAL PROGRAMMING MENTOR</div>
+        </div>
+    </div>
+
+    <div class="header-right">
+
+        <div class="status">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Checking AI...</span>
+        </div>
+
+        <span class="header-version">V2.0</span>
+
+    </div>
+
+</header>
+
+<main class="main">
+
+<section class="hero">
+
+    <div class="hero-tag">
+        <i></i>
+        YOUR AI-POWERED C PROGRAMMING PARTNER
+    </div>
+
+    <h1>
+        Programming made easier.
+        <span>Learning made smarter.</span>
+    </h1>
+
+    <p class="hero-description">
+        Confused by a C program? Stuck on an error?
+        Need someone to explain a concept?
+        Meet your personal AI programming mentor.
+        Ask anything. Learn without hesitation.
+    </p>
+
+    <div class="hero-stats">
+
+        <div class="stat-pill">⚡ AI-powered answers</div>
+        <div class="stat-pill">🔒 Runs locally</div>
+        <div class="stat-pill">🎓 Student friendly</div>
+        <div class="stat-pill">💻 Turbo C support</div>
+
+    </div>
+
+</section>
+
+<section class="workspace">
+
+    <div class="workspace-toolbar">
+
+        <div class="workspace-title">
+
+            <div class="workspace-icon">✦</div>
+
+            <div>
+                <h2>AI Learning Workspace</h2>
+                <p>Ask your question. Let's solve it together.</p>
+            </div>
+
+        </div>
+
+        <div class="toolbar-actions">
+
+            <select class="mode-select" id="mode">
+                <option value="turbo">Turbo C Mode</option>
+                <option value="standard">Standard C Mode</option>
+            </select>
+
+            <button class="new-chat" id="newChat">
+                + New Chat
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="chat-area" id="chatArea">
+
+        <div class="welcome" id="welcome">
+
+            <div class="welcome-symbol">✦</div>
+
+            <h2>Welcome to <span>C AI Solver!</span></h2>
+
+            <p>
+                Your personal C programming assistant is here.
+                Whether you're a beginner or preparing for practicals,
+                start by asking a question below.
+            </p>
+
+            <div class="suggestion-heading">
+                TRY ASKING SOMETHING
+            </div>
+
+            <div class="suggestions">
+
+                <button class="suggestion"
+                    data-q="Explain loops in C from the basics with examples.">
+
+                    <span class="suggestion-icon">🔁</span>
+
+                    <span>
+                        Understand loops
+                        <small>Learn for, while and do-while</small>
+                    </span>
+
+                </button>
+
+                <button class="suggestion"
+                    data-q="Write a complete C program to check whether a number is prime. Explain the logic.">
+
+                    <span class="suggestion-icon">💻</span>
+
+                    <span>
+                        Generate a program
+                        <small>Get a fresh AI-generated solution</small>
+                    </span>
+
+                </button>
+
+                <button class="suggestion"
+                    data-q="Teach me pointers in C from absolute beginner level.">
+
+                    <span class="suggestion-icon">🧠</span>
+
+                    <span>
+                        Learn pointers
+                        <small>Understand a difficult concept</small>
+                    </span>
+
+                </button>
+
+                <button class="suggestion"
+                    data-q="Explain arrays in C with a simple program and output.">
+
+                    <span class="suggestion-icon">📚</span>
+
+                    <span>
+                        Learn arrays
+                        <small>Understand arrays step by step</small>
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="progress-box" id="progressBox">
+
+        <div class="progress-info">
+            <span id="progressText">Preparing AI...</span>
+            <span id="progressPercent">0%</span>
+        </div>
+
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+    </div>
+
+    <div class="input-section">
+
+        <div class="input-container">
+
+            <textarea
+                id="prompt"
+                rows="1"
+                placeholder="Ask your C programming question..."
+                aria-label="Enter your C programming question"></textarea>
+
+            <button class="send-button" id="sendButton">
+                Ask AI ↑
+            </button>
+
+        </div>
+
+        <div class="input-bottom">
+
+            <span>Enter to send · Shift + Enter for new line</span>
+
+            <strong>Powered by local AI</strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="feature-section">
+
+    <div class="section-heading">
+        <small>BUILT FOR STUDENTS</small>
+        <h2>Your learning companion</h2>
+    </div>
+
+    <div class="features">
+
+        <div class="feature">
+
+            <div class="feature-icon">💬</div>
+
+            <h3>Ask without hesitation</h3>
+
+            <p>
+                Ask even the simplest questions.
+                Your mentor helps explain concepts without judgment.
+            </p>
+
+        </div>
+
+        <div class="feature">
+
+            <div class="feature-icon">⚡</div>
+
+            <h3>Fresh AI-generated programs</h3>
+
+            <p>
+                Describe what you need.
+                The AI generates a new C program for your request.
+            </p>
+
+        </div>
+
+        <div class="feature">
+
+            <div class="feature-icon">🎯</div>
+
+            <h3>Understand, don't memorize</h3>
+
+            <p>
+                Learn programming logic, debug mistakes
+                and understand how your code works.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+<footer class="footer">
+
+    <div class="footer-brand">C AI Solver</div>
+
+    <p>
+        Every student deserves the opportunity to understand.
+        Keep learning. Keep improving. Never give up.
+    </p>
+
+    <p>Made for the next generation of C programmers.</p>
+
+</footer>
+
+</div>
+
+<script type="module">
+
+/* ======================================
+   C AI Solver
+   WEBLLM ENGINE
+   QWEN2.5-CODER-0.5B-INSTRUCT
+====================================== */
+
+const MODEL =
+    "Qwen2.5-Coder-0.5B-Instruct-q4f16_1-MLC";
+
+const chatArea=document.getElementById("chatArea");
+const promptBox=document.getElementById("prompt");
+const sendButton=document.getElementById("sendButton");
+const modeSelect=document.getElementById("mode");
+
+const statusText=document.getElementById("statusText");
+const statusDot=document.getElementById("statusDot");
+
+const progressBox=document.getElementById("progressBox");
+const progressText=document.getElementById("progressText");
+const progressPercent=document.getElementById("progressPercent");
+const progressFill=document.getElementById("progressFill");
+
+let engine=null;
+let enginePromise=null;
+let busy=false;
+let conversation=[];
+let codeCounter=0;
+
+const MAX_HISTORY=10;
+
+const SYSTEM_PROMPT=`
+You are C AI Solver, a friendly and knowledgeable C programming
+teacher helping college students and beginners.
+
+Your goal is to help students understand programming.
+
+GENERAL RULES:
+
+1. Answer the student's actual question.
+2. Be friendly, patient and encouraging.
+3. Never shame a student for not understanding.
+4. Explain difficult concepts simply.
+5. Generate fresh programs based on the student's request.
+6. Never pretend that you executed code.
+7. Never invent compiler output.
+8. Use correct C syntax.
+9. Avoid unnecessary variables and headers.
+10. Explain code when requested.
+11. Remember the conversation context.
+12. When a student asks for a program, provide a complete program.
+13. When a student asks about an error, explain its cause.
+14. Do not answer C questions using another language.
+15. Avoid unnecessarily complicated code.
+
+TURBO C MODE:
+
+For complete programs, use:
+
+#include<stdio.h>
+#include<conio.h>
+
+void main()
+{
+    clrscr();
+
+    /* program */
+
+    getch();
+}
+
+MANDATORY:
+- void main()
+- conio.h
+- clrscr() immediately after opening main.
+- getch() before closing main.
+- Never use int main().
+- Never use return 0.
+- Never create duplicate main functions.
+- Avoid unnecessary variables.
+- Use beginner-friendly syntax.
+
+STANDARD C MODE:
+
+For complete programs, use:
+
+#include<stdio.h>
+
+int main(void)
+{
+    /* program */
+
+    return 0;
+}
+
+MANDATORY:
+- int main(void)
+- return 0
+- No conio.h
+- No clrscr()
+- No getch()
+- No void main()
+
+CODE QUALITY:
+
+- Do not create unnecessary variables.
+- For simple addition, avoid an extra sum variable if
+  printf can directly print a+b.
+- Use correct scanf format specifiers.
+- Avoid unused variables.
+- Avoid duplicate statements.
+- Make programs understandable for college beginners.
+
+If the student asks a conceptual question, teach the concept.
+If the student asks for code, generate the code.
+If the student asks a follow-up, continue the same discussion.
+`;
+
+function setStatus(text,state="normal"){
+
+    statusText.textContent=text;
+
+    statusDot.className="status-dot";
+
+    if(state==="ready"){
+        statusDot.classList.add("ready");
+    }
+
+    if(state==="error"){
+        statusDot.classList.add("error");
+    }
+
+}
+
+function showProgress(label,value){
+
+    progressBox.style.display="block";
+
+    progressText.textContent=label;
+
+    const percent=Math.max(0,Math.min(100,value||0));
+
+    progressPercent.textContent=Math.round(percent)+"%";
+
+    progressFill.style.width=percent+"%";
+
+}
+
+function hideProgress(){
+
+    progressBox.style.display="none";
+
+}
+
+function escapeHTML(text){
+
+    return String(text)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+/* MARKDOWN */
+
+function inlineFormat(text){
+
+    let value=escapeHTML(text);
+
+    value=value.replace(
+        /`([^`]+)`/g,
+        '<code class="inline">$1</code>'
+    );
+
+    value=value.replace(
+        /\*\*(.*?)\*\*/g,
+        "<strong>$1</strong>"
+    );
+
+    return value;
+
+}
+
+function renderMarkdown(source){
+
+    const lines=String(source||"")
+        .replace(/\r/g,"")
+        .split("\n");
+
+    let html="";
+    let paragraph=[];
+    let listType=null;
+    let listItems=[];
+    let codeMode=false;
+    let codeLanguage="";
+    let codeLines=[];
+
+    function flushParagraph(){
+
+        if(!paragraph.length)return;
+
+        html+="<p>"+paragraph.map(inlineFormat).join("<br>")+"</p>";
+
+        paragraph=[];
+
+    }
+
+    function flushList(){
+
+        if(!listType)return;
+
+        html+="<"+listType+">";
+
+        listItems.forEach(item=>{
+            html+="<li>"+inlineFormat(item)+"</li>";
+        });
+
+        html+="</"+listType+">";
+
+        listType=null;
+        listItems=[];
+
+    }
+
+    function flushCode(){
+
+        const id="Solver-code-"+(++codeCounter);
+
+        const code=codeLines.join("\n");
+
+        html+=`
+        <div class="code-card">
+
+            <div class="code-toolbar">
+
+                <div class="code-language">
+                    <i></i>
+                    ${escapeHTML(codeLanguage||"C PROGRAM")}
+                </div>
+
+                <div class="code-actions">
+
+                    <button data-copy-code="${id}">
+                        Copy
+                    </button>
+
+                    <button data-download-code="${id}">
+                        Download .c
+                    </button>
+
+                </div>
+
+            </div>
+
+            <pre><code id="${id}">${escapeHTML(code)}</code></pre>
+
+        </div>`;
+
+        codeMode=false;
+        codeLanguage="";
+        codeLines=[];
+
+    }
+
+    for(const line of lines){
+
+        const fence=line.match(/^```(.*)$/);
+
+        if(fence){
+
+            if(codeMode){
+                flushCode();
+            }else{
+
+                flushParagraph();
+                flushList();
+
+                codeMode=true;
+                codeLanguage=fence[1].trim();
+
+            }
+
+            continue;
+
+        }
+
+        if(codeMode){
+
+            codeLines.push(line);
+            continue;
+
+        }
+
+        if(!line.trim()){
+
+            flushParagraph();
+            flushList();
+
+            continue;
+
+        }
+
+        const heading=line.match(/^#{1,3}\s+(.*)$/);
+
+        if(heading){
+
+            flushParagraph();
+            flushList();
+
+            html+="<h3>"+inlineFormat(heading[1])+"</h3>";
+
+            continue;
+
+        }
+
+        const bullet=line.match(/^\s*[-*]\s+(.*)$/);
+        const numbered=line.match(/^\s*\d+[.)]\s+(.*)$/);
+
+        if(bullet||numbered){
+
+            flushParagraph();
+
+            const type=bullet?"ul":"ol";
+
+            if(listType&&listType!==type){
+                flushList();
+            }
+
+            listType=type;
+
+            listItems.push((bullet||numbered)[1]);
+
+            continue;
+
+        }
+
+        flushList();
+
+        paragraph.push(line);
+
+    }
+
+    if(codeMode){
+        flushCode();
+    }
+
+    flushParagraph();
+    flushList();
+
+    return html;
+
+}
+
+/* MESSAGE CREATION */
+
+function addMessage(role,text){
+
+    document.getElementById("welcome")?.remove();
+
+    const message=document.createElement("div");
+
+    message.className="message "+(role==="user"?"user":"ai");
+
+    const avatar=document.createElement("div");
+
+    avatar.className="avatar "+(role==="user"?"user":"ai");
+
+    avatar.textContent=role==="user"?"YOU":"AI";
+
+    const content=document.createElement("div");
+
+    content.className="message-content";
+
+    const label=document.createElement("div");
+
+    label.className="message-label";
+
+    label.textContent=role==="user"?"YOU":"C AI Solver";
+
+    const bubble=document.createElement("div");
+
+    bubble.className="bubble";
+
+    bubble.innerHTML=renderMarkdown(text);
+
+    content.appendChild(label);
+    content.appendChild(bubble);
+
+    message.appendChild(avatar);
+    message.appendChild(content);
+
+    if(role==="ai"){
+
+        const actions=document.createElement("div");
+
+        actions.className="response-actions";
+
+        const copy=document.createElement("button");
+
+        copy.textContent="Copy response";
+
+        copy.addEventListener("click",()=>{
+            copyText(text,copy);
+        });
+
+        actions.appendChild(copy);
+
+        content.appendChild(actions);
+
+    }
+
+    chatArea.appendChild(message);
+
+    chatArea.scrollTop=chatArea.scrollHeight;
+
+    return bubble;
+
+}
+
+/* THINKING */
+
+function showThinking(){
+
+    const element=document.createElement("div");
+
+    element.className="message ai";
+    element.id="thinking";
+
+    element.innerHTML=`
+        <div class="avatar ai">AI</div>
+
+        <div class="message-content">
+
+            <div class="message-label">C AI Solver</div>
+
+            <div class="bubble">
+
+                <div class="loading-message">
+                    <div class="loading-spinner"></div>
+                    Generating your answer...
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+    chatArea.appendChild(element);
+
+    chatArea.scrollTop=chatArea.scrollHeight;
+
+}
+
+function removeThinking(){
+
+    document.getElementById("thinking")?.remove();
+
+}
+
+/* CLIPBOARD */
+
+async function copyText(text,button){
+
+    try{
+
+        await navigator.clipboard.writeText(text);
+
+        const old=button.textContent;
+
+        button.textContent="Copied!";
+
+        setTimeout(()=>{
+            button.textContent=old;
+        },1200);
+
+    }catch(error){
+
+        const temp=document.createElement("textarea");
+
+        temp.value=text;
+
+        document.body.appendChild(temp);
+
+        temp.select();
+
+        document.execCommand("copy");
+
+        temp.remove();
+
+        button.textContent="Copied!";
+
+        setTimeout(()=>{
+            button.textContent="Copy";
+        },1200);
+
+    }
+
+}
+
+/* DOWNLOAD */
+
+function downloadCode(code){
+
+    const blob=new Blob(
+        [code],
+        {type:"text/x-c"}
+    );
+
+    const url=URL.createObjectURL(blob);
+
+    const link=document.createElement("a");
+
+    link.href=url;
+    link.download="c-ai-Solver-program.c";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    setTimeout(()=>{
+        URL.revokeObjectURL(url);
+    },1500);
+
+}
+
+/* CODE ACTIONS */
+
+chatArea.addEventListener("click",event=>{
+
+    const copy=event.target.closest("[data-copy-code]");
+
+    if(copy){
+
+        const element=document.getElementById(
+            copy.dataset.copyCode
+        );
+
+        if(element){
+            copyText(element.textContent,copy);
+        }
+
+    }
+
+    const download=event.target.closest("[data-download-code]");
+
+    if(download){
+
+        const element=document.getElementById(
+            download.dataset.downloadCode
+        );
+
+        if(element){
+            downloadCode(element.textContent);
+        }
+
+    }
+
+});
+
+/* INITIALIZE WEBGPU */
+
+async function initializeAI(){
+
+    if(engine)return engine;
+
+    if(enginePromise)return enginePromise;
+
+    enginePromise=(async()=>{
+
+        try{
+
+            setStatus("Loading AI...");
+
+            showProgress("Checking browser compatibility...",2);
+
+            if(!navigator.gpu){
+
+                throw new Error(
+                    "WebGPU is not available in this browser."
+                );
+
+            }
+
+            const adapter=await navigator.gpu.requestAdapter();
+
+            if(!adapter){
+
+                throw new Error(
+                    "No compatible GPU adapter was found."
+                );
+
+            }
+
+            showProgress("Loading AI engine...",5);
+
+            const webllm=await import(
+                "https://esm.run/@mlc-ai/web-llm"
+            );
+
+            engine=await webllm.CreateMLCEngine(
+                MODEL,
+                {
+
+                    initProgressCallback:(report)=>{
+
+                        const text=report?.text||"Preparing AI model...";
+
+                        const match=text.match(
+                            /(\d+(?:\.\d+)?)\s*%/
+                        );
+
+                        const percent=match?
+                            Number(match[1]):10;
+
+                        showProgress(text,percent);
+
+                    },
+
+                    logLevel:"WARN"
+
+                }
+            );
+
+            hideProgress();
+
+            setStatus("AI Ready","ready");
+
+            return engine;
+
+        }catch(error){
+
+            engine=null;
+
+            hideProgress();
+
+            setStatus("AI unavailable","error");
+
+            console.error("AI initialization:",error);
+
+            throw error;
+
+        }finally{
+
+            enginePromise=null;
+
+        }
+
+    })();
+
+    return enginePromise;
+
+}
+
+/* MODE INSTRUCTIONS */
+
+function getModeInstructions(){
+
+    if(modeSelect.value==="turbo"){
+
+        return `
+CURRENT MODE: TURBO C.
+
+For complete programs strictly use:
+
+#include<stdio.h>
+#include<conio.h>
+
+void main()
+{
+    clrscr();
+
+    /* program */
+
+    getch();
+}
+
+Never use int main.
+Never use return 0.
+Never omit clrscr or getch.
+Never create duplicate main functions.
+`;
+
+    }
+
+    return `
+CURRENT MODE: STANDARD C.
+
+For complete programs strictly use:
+
+#include<stdio.h>
+
+int main(void)
+{
+    /* program */
+
+    return 0;
+}
+
+Never include conio.h.
+Never use clrscr.
+Never use getch.
+Never use void main.
+`;
+
+}
+
+/* GENERATE ANSWER */
+
+async function askAI(){
+
+    const question=promptBox.value.trim();
+
+    if(!question||busy)return;
+
+    busy=true;
+
+    sendButton.disabled=true;
+
+    addMessage("user",question);
+
+    promptBox.value="";
+
+    promptBox.style.height="45px";
+
+    showThinking();
+
+    try{
+
+        const ai=await initializeAI();
+
+        const messages=[
+
+            {
+                role:"system",
+
+                content:
+                    SYSTEM_PROMPT+"\n"+getModeInstructions()
+            },
+
+            ...conversation.slice(-MAX_HISTORY),
+
+            {
+                role:"user",
+                content:question
+            }
+
+        ];
+
+        const stream=await ai.chat.completions.create({
+
+            messages:messages,
+
+            temperature:0.35,
+
+            top_p:0.9,
+
+            max_tokens:650,
+
+            stream:true
+
+        });
+
+        removeThinking();
+
+        const bubble=addMessage("ai","");
+
+        let answer="";
+
+        bubble.innerHTML="";
+
+        const output=document.createElement("div");
+
+        bubble.appendChild(output);
+
+        for await(const chunk of stream){
+
+            const token=
+                chunk.choices?.[0]?.delta?.content||"";
+
+            if(token){
+
+                answer+=token;
+
+                output.innerHTML=renderMarkdown(answer);
+
+                chatArea.scrollTop=chatArea.scrollHeight;
+
+            }
+
+        }
+
+        if(!answer.trim()){
+
+            throw new Error(
+                "The AI returned an empty response."
+            );
+
+        }
+
+        const copy=document.createElement("button");
+
+        copy.textContent="Copy response";
+
+        copy.className="copy-response";
+
+        copy.onclick=()=>{
+            copyText(answer,copy);
+        };
+
+        const actions=document.createElement("div");
+
+        actions.className="response-actions";
+
+        actions.appendChild(copy);
+
+        bubble.appendChild(actions);
+
+        conversation.push(
+            {role:"user",content:question},
+            {role:"assistant",content:answer}
+        );
+
+        conversation=conversation.slice(-MAX_HISTORY);
+
+        saveHistory();
+
+        setStatus("AI Ready","ready");
+
+    }catch(error){
+
+        removeThinking();
+
+        console.error(error);
+
+        let message="I couldn't generate your answer.";
+
+        if(String(error.message).toLowerCase().includes("webgpu")){
+
+            message=
+                "Your browser does not support the required WebGPU features. Please try a compatible modern browser.";
+
+        }else if(!engine){
+
+            message=
+                "The AI could not initialize. Check your internet connection, browser compatibility and available device memory, then reload the page.";
+
+        }else{
+
+            message+=" Details: "+error.message;
+
+        }
+
+        addMessage("ai",message);
+
+        setStatus("AI Error","error");
+
+    }finally{
+
+        busy=false;
+
+        sendButton.disabled=false;
+
+        promptBox.focus();
+
+    }
+
+}
+
+/* SAVE HISTORY */
+
+function saveHistory(){
+
+    try{
+
+        localStorage.setItem(
+            "cai_Solver_history",
+            JSON.stringify({
+                conversation:conversation,
+                mode:modeSelect.value
+            })
+        );
+
+    }catch(error){
+
+        console.warn("History storage error:",error);
+
+    }
+
+}
+
+/* RESTORE HISTORY */
+
+function restoreHistory(){
+
+    try{
+
+        const raw=localStorage.getItem(
+            "cai_Solver_history"
+        );
+
+        if(!raw)return;
+
+        const data=JSON.parse(raw);
+
+        if(!Array.isArray(data.conversation))return;
+
+        conversation=data.conversation.slice(-MAX_HISTORY);
+
+        if(data.mode){
+            modeSelect.value=data.mode;
+        }
+
+        if(conversation.length){
+
+            document.getElementById("welcome")?.remove();
+
+            conversation.forEach(item=>{
+
+                if(item.role==="user"){
+                    addMessage("user",item.content);
+                }
+
+                if(item.role==="assistant"){
+                    addMessage("ai",item.content);
+                }
+
+            });
+
+        }
+
+    }catch(error){
+
+        console.warn("Could not restore history:",error);
+
+    }
+
+}
+
+/* INPUT */
+
+sendButton.addEventListener("click",askAI);
+
+promptBox.addEventListener("keydown",event=>{
+
+    if(event.key==="Enter"&&!event.shiftKey){
+
+        event.preventDefault();
+
+        askAI();
+
+    }
+
+});
+
+promptBox.addEventListener("input",()=>{
+
+    promptBox.style.height="45px";
+
+    promptBox.style.height=
+        Math.min(promptBox.scrollHeight,140)+"px";
+
+});
+
+/* SUGGESTIONS */
+
+function activateSuggestions(){
+
+    document.querySelectorAll(".suggestion").forEach(button=>{
+
+        button.addEventListener("click",()=>{
+
+            promptBox.value=button.dataset.q;
+
+            promptBox.focus();
+
+        });
+
+    });
+
+}
+
+activateSuggestions();
+
+/* NEW CHAT */
+
+document.getElementById("newChat").addEventListener("click",()=>{
+
+    if(busy)return;
+
+    if(!confirm("Start a new conversation?"))return;
+
+    conversation=[];
+
+    localStorage.removeItem("cai_Solver_history");
+
+    chatArea.innerHTML=`
+
+        <div class="welcome" id="welcome">
+
+            <div class="welcome-symbol">✦</div>
+
+            <h2>Welcome to <span>C AI Solver!</span></h2>
+
+            <p>
+                A fresh conversation.
+                What would you like to learn today?
+            </p>
+
+            <div class="suggestion-heading">
+                START LEARNING
+            </div>
+
+            <div class="suggestions">
+
+                <button class="suggestion"
+                    data-q="Explain loops in C with examples.">
+
+                    <span class="suggestion-icon">🔁</span>
+
+                    <span>
+                        Understand loops
+                        <small>Learn loop concepts</small>
+                    </span>
+
+                </button>
+
+                <button class="suggestion"
+                    data-q="Explain arrays in C with a simple example.">
+
+                    <span class="suggestion-icon">📚</span>
+
+                    <span>
+                        Understand arrays
+                        <small>Learn array basics</small>
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+    activateSuggestions();
+
+});
+
+/* STARTUP */
+
+restoreHistory();
+
+setStatus("AI ready to load");
+
+</script>
+
+</body>
+</html>
